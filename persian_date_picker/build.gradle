@@ -70,7 +70,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.Mohamad-Sarfi'
                 artifactId = 'compose_persian_date_picker'
-                version = 'v0.0.3'
+                version = 'v0.1.0'
             }
         }
     }
