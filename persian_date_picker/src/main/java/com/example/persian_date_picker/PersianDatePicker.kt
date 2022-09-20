@@ -94,7 +94,7 @@ fun PersianDatePicker(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(15.dp)
+                        .padding(10.dp)
                     ,
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
