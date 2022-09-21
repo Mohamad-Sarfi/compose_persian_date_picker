@@ -26,7 +26,7 @@ dependencies{
 ```
 
 ## Usage Instructions
-The composable function "PersianDatePicker" must be called from another a @Composable function.
+The composable function "PersianDatePicker" must be called from another @Composable function.
 First you have to declare a boolean state named "hideDatePicker" which its value will be set true in "onDismiss" lambda.
 
 The picked date by user is return in "setDate" lambda. setDate has a Map<String, String> as parameter which has 3 keys, "day", "month" and "year". Each one can be accessed and stored the way shown below.
