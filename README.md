@@ -85,7 +85,7 @@ fun MyCompose(){
 ### Parameters Table
 | Parameter | Description |
 | --- | --- |
-|`onDismiss`| Needs to set the value of a mutable state to `false` to hide the dialog | 
+|`onDismiss`| Needs to set the value of a mutable state to `true` to hide the dialog | 
 | `setDate` | returns a Map as the parameter of the lambda which consists of `it["day"]`,  `it["month"]`,  `it["year"]`
 | `minYear` | sets minimum value of the year, default value is 1350 |
 | `maxYear` | sets maximum value of the year, default value is 1420 |
