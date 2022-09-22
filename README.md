@@ -1,4 +1,4 @@
-## Compose Persian Date Picker
+## Compose Persian Date Picker - Alpha Version
 Persian date picker for Compose, Based on Jalali calendar.
 This library is designed for Iranians and other Persian speaking communities that utilize Jalali (Persian) calendar rather than Christian calendar which is the default calendar for Googles provided date picker composable in Android.
 
@@ -92,7 +92,7 @@ fun MyCompose(){
 | `positiveButtonTxt` | sets the text for positive button, default value is تایید |
 | `negativeButtonTxt` | sets the text for negative button, default value is لغو |
 
-
+If you face any issues or have feedbacks I'd be happy to hear from you `sarfimohamad46@gmail.com`
 
 
 
