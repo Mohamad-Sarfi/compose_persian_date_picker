@@ -42,7 +42,6 @@ fun PersianRangeDatePicker(
         mutableStateOf("main")
     }
 
-
     //list = [year, month, day]
     var startDate by remember {
         mutableStateOf(listOf(year, month, today))
@@ -286,7 +285,7 @@ private fun Days(
             items(monthRange){ month ->
 
                 val daysList = daysOfMonth(listOf(startDate[0], month), startDate, endDate)
-                
+
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -360,16 +359,26 @@ private fun setStartEndDates(
         if (!start) {
             setStartDate(listOf(startDate[0], month , day.toInt()))
             setStartBool(true)
-        } else {
-            setEndDate(listOf(endDate[0], month, day.toInt()))
+        } else if (day.toInt() == startDate[2] && month == startDate[1]){
+            setStartBool(false)
+            setEndBool(false)
+            
+        } else if (month == startDate[1]) {
+            if (day.toInt() < startDate[2]){
+                setEndDate(startDate)
+                setStartDate(listOf(startDate[0], month , day.toInt()))
+                setEndBool(true)
+            } else {
+                setEndDate(listOf(startDate[0], month , day.toInt()))
+                setEndBool(true)
+            }
+        } else if (month < startDate[1]){
+            setEndDate(startDate)
+            setStartDate(listOf(startDate[0], month , day.toInt()))
             setEndBool(true)
-//            if (day.toInt() < startDate[2]){
-//                setStartDate(listOf(startDate[0], month, day.toInt()))
-//            } else {
-//                setEndDate(listOf(endDate[0], month, day.toInt()))
-//                setEndBool(true)
-//            }
-            //setStartBool(false)
+        } else {
+            setEndDate(listOf(startDate[0], month , day.toInt()))
+            setEndBool(true)
         }
     }
 }
