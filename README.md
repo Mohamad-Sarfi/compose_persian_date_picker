@@ -32,7 +32,7 @@ Then add following line to your module build.gradle file
 ```groovy
 dependencies{
   ...
-  implementation 'com.github.Mohamad-Sarfi:compose_persian_date_picker:0.1.0'
+  implementation 'com.github.Mohamad-Sarfi:compose_persian_date_picker:0.3.0'
  }
 ```
 
