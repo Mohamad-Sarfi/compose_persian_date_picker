@@ -7,6 +7,11 @@ The fonts are also predefined fonts in Material theme, namely body1-2, h5-h1 and
 
 In order to customize the composable design you just need to modify your app's theme.
 
+
+![This is an image](https://s6.uupload.ir/files/main_spdi.jpg)
+![This is an image](https://s6.uupload.ir/files/nightmode_4pz.jpg)
+![This is an image](https://s6.uupload.ir/files/months_xt33.jpg)
+
 ## Adding to your project
 First add `jitpack.io` to setting.gradle
 ```groovy
