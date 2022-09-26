@@ -1,26 +1,20 @@
 package com.example.composeautomation.ui.datepicker
 
+
 import android.util.Log
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import ir.huri.jcal.JalaliCalendar
+import kotlinx.coroutines.launch
 
 @Composable
 fun PersianRangeDatePicker(
@@ -47,31 +42,14 @@ fun PersianRangeDatePicker(
         mutableStateOf("main")
     }
 
-    // Start date
-    var sMonth by remember {
-        mutableStateOf(monthsList[month - 1])
+
+    //list = [year, month, day]
+    var startDate by remember {
+        mutableStateOf(listOf(year, month, today))
     }
 
-    var sYear by remember {
-        mutableStateOf(year.toString())
-    }
-
-    var sDay by remember {
-        mutableStateOf(today.toString())
-    }
-
-
-    // End date
-    var eMonth by remember {
-        mutableStateOf(monthsList[month - 1])
-    }
-
-    var eYear by remember {
-        mutableStateOf(year.toString())
-    }
-
-    var eDay by remember {
-        mutableStateOf(today.toString())
+    var endDate by remember {
+        mutableStateOf(listOf(year, month, today))
     }
 
 
@@ -95,19 +73,11 @@ fun PersianRangeDatePicker(
             ) {
 
                 MainContent(
-                    sMonth,
-                    sYear ,
-                    sDay ,
-                    eMonth,
-                    eYear,
-                    eDay,
+                    startDate,
+                    endDate,
                     selectedPart,
-                    setSDay = {sDay = it},
-                    setSMonth = {sMonth = it},
-                    setSYear = {sYear = it},
-                    setEDay = {eDay = it},
-                    setEMonth = {eMonth = it},
-                    setEYear = {eYear = it},
+                    setStartDate = {startDate = it},
+                    setEndDate = {endDate = it},
                     setSelected = {selectedPart = it}
                 )
 
@@ -140,14 +110,14 @@ fun PersianRangeDatePicker(
                                 setDate(
                                     listOf(
                                         mapOf(
-                                            "day" to sDay,
-                                            "month" to (monthsList.indexOf(sMonth) + 1).toString(),
-                                            "year" to sYear
+                                            "day" to startDate[2].toString(),
+                                            "month" to startDate[1].toString(),
+                                            "year" to startDate[0].toString()
                                         ),
                                         mapOf(
-                                            "day" to eDay,
-                                            "month" to (monthsList.indexOf(eMonth) + 1).toString(),
-                                            "year" to eYear
+                                            "day" to endDate[2].toString(),
+                                            "month" to endDate[1].toString(),
+                                            "year" to endDate[0].toString()
                                         )
                                     )
                                 )
@@ -163,26 +133,18 @@ fun PersianRangeDatePicker(
 
 @Composable
 private fun MainContent(
-    sMonth: String,
-    sYear : String,
-    sDay : String,
-    eMonth: String,
-    eYear : String,
-    eDay : String,
+    startDate : List<Int>,
+    endDate : List<Int>,
     selectedPart : String,
-    setSDay : (String) -> Unit,
-    setSMonth: (String) -> Unit,
-    setSYear: (String) -> Unit,
-    setEDay : (String) -> Unit,
-    setEMonth: (String) -> Unit,
-    setEYear: (String) -> Unit,
+    setStartDate : (List<Int>) -> Unit,
+    setEndDate : (List<Int>) -> Unit,
     setSelected : (String) -> Unit
 ){
 
     val width = LocalConfiguration.current.screenWidthDp
     val persianWeekDays = listOf("شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه", )
     val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
-    val weekDay = JalaliCalendar(sYear.toInt(), monthsList.indexOf(sMonth) + 1, sDay.toInt()).dayOfWeek
+    val weekDay = JalaliCalendar(startDate[0], startDate[1], startDate[2]).dayOfWeek
 
 
     Column(
@@ -196,11 +158,18 @@ private fun MainContent(
                     .height(45.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colors.primary)
-                    .padding(vertical = 10.dp, horizontal = 5.dp),
+                    .padding(vertical = 13.dp, horizontal = 15.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.Start
             ) {
-                //Text(text = "انتخاب تاریخ", color = MaterialTheme.colors.onPrimary, style = MaterialTheme.typography.body2)
+                Icon(Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier
+                        .clickable {
+
+                        }
+                )
             }
 
             Row(
@@ -216,16 +185,13 @@ private fun MainContent(
                     horizontalArrangement = Arrangement.End
                 ){
                     Text(
-                        text = eMonth,
+                        text = monthsList[endDate[1]],
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.onPrimary,
                         modifier = Modifier
                             .padding(horizontal = 5.dp)
-                            .clickable {
-                                setSelected("month")
-                            }
                     )
-                    Text(text = eDay, style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
+                    Text(text = endDate[2].toString(), style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
                     Text(text = "تا",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.onPrimary,
@@ -233,46 +199,33 @@ private fun MainContent(
                     )
 
                     Text(
-                        text = sMonth,
+                        text = monthsList[startDate[1]],
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.onPrimary,
                         modifier = Modifier
                             .padding(horizontal = 5.dp)
-                            .clickable {
-                                setSelected("month")
-                            }
                     )
-                    Text(text = sDay, style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
+                    Text(text = startDate[2].toString(), style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
                 }
             }
 
             Days(
-                sMonth,
-                sDay,
-                sYear,
-                eMonth,
-                eDay,
-                eYear,
-                setSDay = {setSDay(it)},
-                setEDay = {setEDay(it)}
+                startDate,
+                endDate,
+                setStartDate = {setStartDate(it)} ,
+                setEndDay = {setEndDate(it)}
             )
 
         }
     }
-
-
 }
 
 @Composable
 private fun Days(
-    sMonth: String,
-    sDay : String ,
-    sYear: String ,
-    eMonth: String,
-    eDay : String ,
-    eYear: String ,
-    setSDay : (String) -> Unit,
-    setEDay : (String) -> Unit,
+    startDate: List<Int>,
+    endDate: List<Int>,
+    setStartDate : (List<Int>) -> Unit,
+    setEndDay : (List<Int>) -> Unit,
     ){
 
     val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
@@ -286,34 +239,27 @@ private fun Days(
             mutableStateOf(false)
     }
 
-    var weekDay = JalaliCalendar(sYear.toInt(), monthsList.indexOf(sMonth) + 1 , 1).dayOfWeek
+    var weekDay = JalaliCalendar(startDate[0].toInt(), startDate[1] + 1 , 1).dayOfWeek
 
     var today = JalaliCalendar().day
-    val thisMonth = JalaliCalendar().month -1
-    Log.i("TAG_month","$thisMonth")
+    val thisMonth = JalaliCalendar().month
 
-    var daysList = mutableListOf<String>()
 
-    Log.i("TAG_weekday", "$weekDay")
 
-    if (weekDay != 7){
-        for (i in 1..weekDay){
-            daysList.add(" ")
+    val monthRange = mutableListOf<Int>()
+
+    for (m in thisMonth - 3 .. thisMonth + 3){
+        monthRange.add(m)
+    }
+
+    var gridState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(key1 = 1){
+        scope.launch {
+            gridState.scrollToItem(monthRange.indexOf(thisMonth-1))
         }
     }
 
-    if (monthsList.indexOf(sMonth) < 6){
-        for (i in 1..31){
-            daysList.add(i.toString())
-        }
-    } else {
-        for (i in 1..30){
-            daysList.add(i.toString())
-            if (sDay.toInt() > 30){
-                setSDay("30")
-            }
-        }
-    }
     Column(
         Modifier
             .fillMaxWidth()
@@ -325,25 +271,33 @@ private fun Days(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            weekDays.forEach{
+            weekDays.forEach {
                 Text(text = it, color = MaterialTheme.colors.primary.copy(.4f), style = MaterialTheme.typography.subtitle2)
             }
         }
 
-        val years = listOf(sYear.toInt() - 1, sYear.toInt(), sYear.toInt() + 1)
+        //val years = listOf(sYear.toInt() - 1, sYear.toInt(), sYear.toInt() + 1)
 
-        LazyColumn(modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp)){
-            items(12){ month ->
-                Row(Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
-                    Text(text = month.toString(), style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onBackground)
+        LazyColumn(
+            modifier = Modifier
+            .fillMaxWidth().height(290.dp),
+            state = gridState
+        ){
+            items(monthRange){ month ->
+
+                val daysList = daysOfMonth(listOf(startDate[0], month), startDate, endDate)
+                
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp, vertical = 0.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                    Text(text = monthsList[month], style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onBackground.copy(.5f))
                 }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(7),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
+                        .height(290.dp),
                     contentPadding = PaddingValues(horizontal =  15.dp, vertical = 0.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalArrangement = Arrangement.Center
@@ -351,62 +305,110 @@ private fun Days(
                     items(daysList){
                         Surface(
                             modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .size(45.dp)
+                                .padding(vertical = 2.dp)
+                                .size(42.dp)
                                 .clip(
                                     decideDayShape(
                                         it,
-                                        sDay,
-                                        eDay,
-                                        sMonth,
-                                        eMonth,
-                                        sMonth
+                                        month,
+                                        startDate,
+                                        endDate,
                                     )
                                 )
                                 .clickable {
-                                    if (it != " ") {
-                                        if (!start) {
-                                            setSDay(it)
-                                            start = true
-                                        } else {
-                                            setEDay(it)
-                                            end = true
-                                        }
-                                    }
+                                    setStartEndDates(
+                                        it,
+                                        month,
+                                        startDate,
+                                        endDate,
+                                        start,
+                                        { v -> setStartDate(v) },
+                                        { v -> setEndDay(v) },
+                                        {v -> end = v},
+                                        { v -> start = v }
+                                    )
                                 },
-                            shape = decideDayShape(it, sDay, eDay, sMonth, eMonth, sMonth),
-                            color = decideDayColor(it, sDay, eDay, sMonth, eMonth, sMonth),
-                            border = BorderStroke( 1.dp, color = if (it == today.toString() && monthsList.indexOf(sMonth) == thisMonth) MaterialTheme.colors.primary else Color.Transparent)
+                            shape = decideDayShape(it, month, startDate, endDate, ),
+                            color = decideDayColor(it, startDate, endDate, end, month),
+                            border = BorderStroke( 1.dp, color = if (it == today.toString() && startDate[1] == thisMonth) MaterialTheme.colors.primary else Color.Transparent)
                         ) {
                             Row(Modifier.fillMaxSize(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center) {
-                                Text(text = it, style = MaterialTheme.typography.body1, color = if (sDay == it) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onBackground.copy(.7f))
+                                Text(text = it, style = MaterialTheme.typography.body1, color = decideDayText(it, startDate, endDate, month))
                             }
                         }
                     }
                 }
             }
         }
-
-
-
     }
 }
 
-private fun StartEndDate(value: String, sDay: String, sMonth: String, eDay: String, eMonth: String, start : Boolean, end: Boolean){
-    if (start){
-
+private fun setStartEndDates(
+    day: String,
+    month : Int,
+    startDate: List<Int>,
+    endDate: List<Int>,
+    start : Boolean,
+    setStartDate: (List<Int>) -> Unit,
+    setEndDate: (List<Int>) -> Unit,
+    setEndBool : (Boolean) -> Unit,
+    setStartBool : (Boolean) -> Unit
+){
+    if (day != " "){
+        if (!start) {
+            setStartDate(listOf(startDate[0], month , day.toInt()))
+            setStartBool(true)
+        } else {
+            setEndDate(listOf(endDate[0], month, day.toInt()))
+            setEndBool(true)
+//            if (day.toInt() < startDate[2]){
+//                setStartDate(listOf(startDate[0], month, day.toInt()))
+//            } else {
+//                setEndDate(listOf(endDate[0], month, day.toInt()))
+//                setEndBool(true)
+//            }
+            //setStartBool(false)
+        }
     }
+}
+
+
+private fun calculateFirstDayOffset(date : List<Int>) : Int{
+    return JalaliCalendar(date[0].toInt(), date[1] + 1 , 1).dayOfWeek
+}
+
+private fun daysOfMonth(date: List<Int>, startDate: List<Int>, endDate: List<Int>) : List<String>{
+    var daysList = mutableListOf<String>()
+
+    val weekDay = calculateFirstDayOffset(date)
+    if (weekDay != 7){
+        for (i in 1..weekDay){
+            daysList.add(" ")
+        }
+    }
+
+    if (startDate[1] < 6){
+        for (i in 1..31){
+            daysList.add(i.toString())
+        }
+    } else {
+        for (i in 1..30){
+            daysList.add(i.toString())
+        }
+    }
+    return daysList
 }
 
 @Composable
-private fun decideDayColor(value : String, sDay: String, eDay: String, sMonth: String, eMonth: String, currentMonth : String) : Color {
+private fun decideDayColor(day : String, startDate: List<Int>, endDate: List<Int>, end : Boolean, month : Int) : Color {
 
-    if (value != " "){
-        if (value == sDay || value == eDay){
+    if (day != " "){
+        if ((day == startDate[2].toString() && month == startDate[1]) || (day == endDate[2].toString() && month == endDate[1])){
             return  MaterialTheme.colors.primary
-        } else if (isBetweenStartEnd(value, sDay, eDay, sMonth, eMonth, currentMonth)) {
+        } else if (isBetweenStartEnd(day, startDate, endDate, month) && end) {
+            Log.i("TAG_yyy", "Found")
             return MaterialTheme.colors.primary.copy(.1f)
         }
         return Color.Transparent
@@ -414,15 +416,27 @@ private fun decideDayColor(value : String, sDay: String, eDay: String, sMonth: S
     return Color.Transparent
 }
 
-private fun decideDayShape(value : String, sDay: String, eDay: String, sMonth: String, eMonth: String, currentMonth : String) : RoundedCornerShape{
+@Composable
+private fun decideDayText(day : String, startDate: List<Int>, endDate: List<Int>, month : Int) : Color {
+    if (day != " "){
+        if ((startDate[2].toString() == day && month == startDate[1]) || (endDate[2].toString() == day && month == endDate[1])){
+            return MaterialTheme.colors.onPrimary
+        } else {
+            return MaterialTheme.colors.onBackground.copy(.7f)
+        }
+    }
+    return Color.Transparent
+}
+
+private fun decideDayShape(day : String, month: Int, startDate: List<Int>, endDate: List<Int>) : RoundedCornerShape{
 
     val cornerRadius = 13.dp
-    if (value != " "){
-        if (value == sDay){
+    if (day != " "){
+        if (day == startDate[2].toString() && month == startDate[1]){
             return RoundedCornerShape(topStart = cornerRadius, bottomStart = cornerRadius)
-        } else if (value == eDay) {
+        } else if (day == endDate[2].toString() && month == endDate[1]) {
             return RoundedCornerShape(topEnd = cornerRadius, bottomEnd = cornerRadius)
-        } else if (isBetweenStartEnd(value, sDay, eDay, sMonth, eMonth, currentMonth)){
+        } else if (isBetweenStartEnd(day, startDate, endDate, month)){
             return RoundedCornerShape(0.dp)
         }
         return RoundedCornerShape(0.dp)
@@ -430,14 +444,20 @@ private fun decideDayShape(value : String, sDay: String, eDay: String, sMonth: S
     return RoundedCornerShape(0.dp)
 }
 
-private fun isBetweenStartEnd(value : String, sDay: String, eDay: String, sMonth: String, eMonth: String, currentMonth : String) : Boolean {
+private fun isBetweenStartEnd(value : String, startDate: List<Int>, endDate: List<Int>, currentMonth : Int) : Boolean {
     if (value != " "){
-        if (currentMonth == sMonth && currentMonth == eMonth){
-            if (value.toInt() > sDay.toInt() && value.toInt() < eDay.toInt()){
+        if (currentMonth == startDate[1] && currentMonth == endDate[1]){
+            if (value.toInt() > startDate[2] && value.toInt() < endDate[2]){
                 return true
             }
-        } else if (currentMonth.toInt() in sMonth.toInt()..eMonth.toInt()){
-            if (value.toInt() < eDay.toInt()){
+        } else if (currentMonth == startDate[1]){
+            if (value.toInt() > startDate[2]){
+                return true
+            }
+        } else if (currentMonth < endDate[1] && currentMonth > startDate[1]){
+            return true
+        } else if (currentMonth <= endDate[1] && currentMonth > startDate[1]){
+            if (value.toInt() < endDate[2]){
                 return true
             }
         }
