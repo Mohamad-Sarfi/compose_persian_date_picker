@@ -7,11 +7,14 @@ The fonts are also predefined fonts in Material theme, namely body1-2, h5-h1 and
 
 In order to customize the composable design you just need to modify your app's theme.
 
-<picture>
-  <img alt="" src="https://s6.uupload.ir/files/main_spdi.jpg" width="50">
-  <img alt="" src="https://s6.uupload.ir/files/nightmode_4pz.jpg" width="50">
-  <img alt="" src="https://s6.uupload.ir/files/months_xt33.jpg" width="50">
-</picture>
+<ul>
+  <li><img alt="" src="https://s6.uupload.ir/files/main_spdi.jpg" width="200"></li>
+  
+  <li><img alt="" src="https://s6.uupload.ir/files/nightmode_4pz.jpg" width="200"></li>
+  
+  <li><img alt="" src="https://s6.uupload.ir/files/months_xt33.jpg" width="200"></li>
+  
+</ul>
 
 
 
