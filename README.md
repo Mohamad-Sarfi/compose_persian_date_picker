@@ -1,4 +1,6 @@
+
 ## Compose Persian Date Picker - Alpha Version
+<img alt="" src="https://s6.uupload.ir/files/per_calender_p5l2.jpg" width="600">
 Persian date picker for Compose, Based on Jalali calendar.
 This library is designed for Iranians and other Persian speaking communities that utilize Jalali (Persian) calendar rather than Christian calendar which is the default calendar for Googles provided date picker composable in Android.
 
@@ -7,14 +9,6 @@ The fonts are also predefined fonts in Material theme, namely body1-2, h5-h1 and
 
 In order to customize the composable design you just need to modify your app's theme.
 
-<ul style="list-style-type:none" >
-  <li><img alt="" src="https://s6.uupload.ir/files/main_spdi.jpg" width="250"></li>
-  
-  <li><img alt="" src="https://s6.uupload.ir/files/nightmode_4pz.jpg" width="250"></li>
-  
-  <li><img alt="" src="https://s6.uupload.ir/files/months_xt33.jpg" width="250"></li>
-  
-</ul>
 
 
 
