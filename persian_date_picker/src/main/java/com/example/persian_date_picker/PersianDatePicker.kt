@@ -45,6 +45,7 @@ fun PersianDatePicker(
     maxYear: Int = 1420,
     positiveButtonTxt : String = "تایید",
     negativeButtonTxt : String = "لغو",
+    shortWeekDays: Boolean = false,
     setDate : (Map<String, String>) -> Unit
 ){
 
@@ -57,6 +58,7 @@ fun PersianDatePicker(
     var selectedPart by remember {
         mutableStateOf("main")
     }
+
     var mMonth by remember {
         mutableStateOf(monthsList[month - 1])
     }
@@ -94,6 +96,7 @@ fun PersianDatePicker(
                     mMonth, mYear, mDay,
                     minYear = minYear ,
                     maxYear = maxYear ,
+                    shortWeekDays = shortWeekDays,
                     selectedPart,{mDay = it},
                     setMonth = {mMonth = it},
                     setYear = {mYear = it} ){selectedPart = it}
@@ -149,6 +152,7 @@ private fun MainContent(
     mDay : String,
     minYear: Int,
     maxYear: Int,
+    shortWeekDays : Boolean,
     selectedPart : String,
     setDay : (String) -> Unit,
     setMonth: (String) -> Unit,
@@ -158,6 +162,7 @@ private fun MainContent(
 
     val width = LocalConfiguration.current.screenWidthDp
     val persianWeekDays = listOf("شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه", )
+
     val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
     val weekDay = JalaliCalendar(mYear.toInt(), monthsList.indexOf(mMonth) + 1, mDay.toInt()).dayOfWeek
 
@@ -212,7 +217,7 @@ private fun MainContent(
                 ){
                     Text(
                         text = mMonth,
-                        style = MaterialTheme.typography.h4,
+                        style = MaterialTheme.typography.h5,
                         color = MaterialTheme.colors.onPrimary,
                         modifier = Modifier
                             .padding(horizontal = 5.dp)
@@ -220,12 +225,12 @@ private fun MainContent(
                                 setSelected("month")
                             }
                     )
-                    Text(text = mDay, style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
-                    Text(text = " ،"  + persianWeekDays[weekDay - 1] , style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
+                    Text(text = mDay, style = MaterialTheme.typography.h5, color = MaterialTheme.colors.onPrimary)
+                    Text(text = persianWeekDays[weekDay - 1] , style = MaterialTheme.typography.h5, color = MaterialTheme.colors.onPrimary, modifier = Modifier.padding(horizontal = 5.dp))
 
                 }
-
             }
+
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -297,22 +302,17 @@ private fun MainContent(
                     "selection" ->
                         Crossfade(selectedPart) { part ->
                             when(part){
-                                "main" -> Days(mMonth, mDay, mYear, setDay = {setDay(it)}, changeSelectedPart = {})
+                                "main" -> Days(mMonth, mDay, mYear, shortWeekDays,setDay = {setDay(it)}, changeSelectedPart = {})
                                 "month" -> Months(mMonth,{setSelected("main")} ){setMonth(it)}
                                 "year" -> Years(mYear, minYear, maxYear,setYear = {setYear(it)}, changeSelectedPart = {setSelected("main")})
-                                else -> Days(mMonth, mDay, mYear, setDay = {setDay(it)}, changeSelectedPart = {})
+                                else -> Days(mMonth, mDay, mYear,shortWeekDays, setDay = {setDay(it)}, changeSelectedPart = {})
                             }
                         }
                     "manual" -> ManualDatePick( { setDay(it) }, {setMonth(it)}, {setYear(it)})
                 }
             }
-
-
-
         }
     }
-
-
 }
 
 @Composable
@@ -471,15 +471,15 @@ private fun Months(mMonth : String, setSelected: () -> Unit ,setMonth : (String)
     LazyVerticalGrid(
         modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.Center
     ){
         items(monthsList){
             Surface(
                 modifier = Modifier
-                    .padding(10.dp)
-                    .size(70.dp)
+                    .padding(5.dp)
+                    .size(60.dp)
                     .clip(CircleShape)
                     .clickable {
                         setMonth(it)
@@ -495,21 +495,20 @@ private fun Months(mMonth : String, setSelected: () -> Unit ,setMonth : (String)
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = it, color = if (mMonth == it) MaterialTheme.colors.onPrimary else MaterialTheme.colors.primary, style = MaterialTheme.typography.h5)
+                    Text(text = it, color = if (mMonth == it) MaterialTheme.colors.onPrimary else MaterialTheme.colors.primary, style = MaterialTheme.typography.body1)
                 }
             }
         }
     }
-
-
 }
 
 
 @Composable
-private fun Days(mMonth: String,mDay : String , mYear: String , setDay : (String) -> Unit, changeSelectedPart : (String) -> Unit){
+private fun Days(mMonth: String,mDay : String , mYear: String ,shortWeekDays: Boolean, setDay : (String) -> Unit, changeSelectedPart : (String) -> Unit){
 
     val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
     val weekDays = listOf("شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه", )
+    val persianWeekDaysShort = listOf("ش","ی","د","س","چ","پ","ج",)
 
     var weekDay = JalaliCalendar(mYear.toInt(), monthsList.indexOf(mMonth) + 1 , 1).dayOfWeek
 
@@ -550,8 +549,14 @@ private fun Days(mMonth: String,mDay : String , mYear: String , setDay : (String
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            weekDays.forEach{
-                Text(text = it, color = MaterialTheme.colors.primary.copy(.4f), style = MaterialTheme.typography.subtitle2)
+            if (shortWeekDays){
+                persianWeekDaysShort.forEach{
+                    Text(text = it, color = MaterialTheme.colors.primary.copy(.4f), style = MaterialTheme.typography.subtitle2)
+                }
+            } else {
+                weekDays.forEach{
+                    Text(text = it, color = MaterialTheme.colors.primary.copy(.4f), style = MaterialTheme.typography.subtitle2)
+                }
             }
         }
         LazyVerticalGrid(
@@ -636,10 +641,6 @@ private fun Years(mYear: String, minYear: Int, maxYear: Int, setYear : (String) 
     }
 
 }
-
-
-
-
 
 
 
