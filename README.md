@@ -96,7 +96,7 @@ fun MyCompose(){
 | `maxYear` | sets maximum value of the year, default value is 1420 |
 | `positiveButtonTxt` | sets the text for positive button, default value is تایید |
 | `negativeButtonTxt` | sets the text for negative button, default value is لغو |
-
+| `shortWeekDays` | decides if week days on top row are shown fully or their first letter is shown. Default value is `false`|
 If you face any issues or have feedbacks I'd be happy to hear from you `sarfimohamad46@gmail.com`
 
 
