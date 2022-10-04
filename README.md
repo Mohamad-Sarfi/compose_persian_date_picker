@@ -26,11 +26,11 @@ Then add following line to your module build.gradle file
 ```groovy
 dependencies{
   ...
-  implementation 'com.github.Mohamad-Sarfi:compose_persian_date_picker:0.3.0'
+  implementation 'com.github.Mohamad-Sarfi:compose_persian_date_picker:0.5.0'
  }
 ```
 
-## Usage Instructions
+## Usage Instructions - PersianDatePicker
 The composable function "PersianDatePicker" must be called from another @Composable function.
 First you have to declare a boolean state named "hideDatePicker" which its value will be set true in "onDismiss" lambda.
 
@@ -98,6 +98,39 @@ fun MyCompose(){
 | `negativeButtonTxt` | sets the text for negative button, default value is لغو |
 | `shortWeekDays` | decides if week days on top row are shown fully or their first letter is shown. Default value is `false`|
 
+
+## Usage Instructions - RangeDatePicker
+The second composable provided to you in this library is a "Range Date Picker" that lets you pick a date range with a "start date" and "end date"
+The overall functionality is almost the as the `PersianDatePicker` but the argument in setDate lambda is a list of maps which index 0 is starting date and index 1 is end date.
+
+```kotlin
+@Composable
+fun MyCompose(){
+  
+  var hideRangeDatePicker = mutableSateOf(true)
+  
+  Button(
+    onClick = {hideDatePicker.value = false}
+   ) {
+    Text("انتخاب بازه زمانی")
+   }
+  
+  if (!hideRangeDatePicker){
+  
+    // *************************************************
+    PersianRangeDatePicker(
+      onDismiss = { hideRangeDatePicker.value = true }, 
+      setDate = { list ->
+          var startDateMap = list[0]
+          var endDateMap = list[1]
+        }
+    )
+    // *************************************************
+    
+  }
+ 
+}
+```
 
 If you face any issues or have feedbacks I'd be happy to hear from you `sarfimohamad46@gmail.com`
 
