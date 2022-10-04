@@ -35,23 +35,15 @@ fun PersianRangeDatePicker(
     val today = JalaliCalendar().day
     val month = JalaliCalendar().month
     val year = JalaliCalendar().year
-
-    val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
-
     var selectedPart by remember {
         mutableStateOf("main")
     }
-
-    //list = [year, month, day]
     var startDate by remember {
         mutableStateOf(listOf(year, month, today))
     }
-
     var endDate by remember {
         mutableStateOf(listOf(year, month, today))
     }
-
-
     val width = LocalConfiguration.current.screenWidthDp
 
     Dialog(onDismissRequest = { onDismiss(true) }) {
@@ -139,7 +131,6 @@ private fun MainContent(
     setEndDate : (List<Int>) -> Unit,
     setSelected : (String) -> Unit
 ){
-
     val width = LocalConfiguration.current.screenWidthDp
     val persianWeekDays = listOf("شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه", )
     val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
@@ -151,7 +142,6 @@ private fun MainContent(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column() {
-
             Row(
                 Modifier
                     .height(45.dp)
@@ -170,7 +160,6 @@ private fun MainContent(
                         }
                 )
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -362,7 +351,7 @@ private fun setStartEndDates(
         } else if (day.toInt() == startDate[2] && month == startDate[1]){
             setStartBool(false)
             setEndBool(false)
-            
+
         } else if (month == startDate[1]) {
             if (day.toInt() < startDate[2]){
                 setEndDate(startDate)
